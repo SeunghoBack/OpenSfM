@@ -46,7 +46,7 @@ void WriteToStreamCurrentVersion(S& ostream,
                                  const map::TracksManager& manager) {
   ostream << manager.TRACKS_HEADER << "_v" << manager.TRACKS_VERSION
           << std::endl;
-  
+
   TrackLengths tl;
   TrackRecord tr;
 
@@ -54,7 +54,7 @@ void WriteToStreamCurrentVersion(S& ostream,
   for (const auto& shotID : shotsIDs) {
     const auto observations = manager.GetShotObservations(shotID);
     for (const auto& observation : observations) {
-     
+
       tl.imageLen = shotID.length();
       tl.trackIdLen = observation.first.length();
       tr.featureID = observation.second.feature_id;
@@ -510,5 +510,5 @@ std::string TracksManager::AsString() const {
 }
 
 std::string TracksManager::TRACKS_HEADER = "OPENSFM_TRACKS_VERSION";
-int TracksManager::TRACKS_VERSION = 102;
+int TracksManager::TRACKS_VERSION = 2;
 }  // namespace map
