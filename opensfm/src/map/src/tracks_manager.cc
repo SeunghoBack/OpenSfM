@@ -181,34 +181,6 @@ map::TracksManager InstanciateFromStreamV2(S& fstream) {
   return manager;
 }
 
-map::TracksManager InstanciateFromFilenameBinaryV2(std::ifstream& fstream, const std::string &filename) {
-  // Close stream, we'll reopen it in binary mode
-  if (fstream.is_open()) fstream.close();
-  std::ifstream fs(filename, std::ios_base::binary);
-
-  map::TracksManager manager;
-
-  // Skip version line
-  char buffer[131072];
-  std::string version;
-  std::getline(fs, version);
-
-  TrackLengths tl;
-  TrackRecord tr;
-
-  while(!fs.eof()){
-      fs.read(reinterpret_cast<char *>(&tl), sizeof(TrackLengths));
-      fs.read(buffer, tl.imageLen + tl.trackIdLen);
-      std::string image(buffer, tl.imageLen);
-      std::string trackID(buffer + tl.imageLen, tl.trackIdLen);
-
-      fs.read(reinterpret_cast<char *>(&tr), sizeof(TrackRecord));
-      auto observation = InstanciateObservation(tr.x, tr.y, tr.scale, tr.featureID, tr.r, tr.g, tr.b, -1, -1);
-      manager.AddObservation(image, trackID, observation);
-  }
-
-  return manager;
-}
 
 template <class S>
 map::TracksManager InstanciateFromStreamT(S& fstream, const std::string &filename = "") {
@@ -220,8 +192,6 @@ map::TracksManager InstanciateFromStreamT(S& fstream, const std::string &filenam
       return InstanciateFromStreamV1(fstream);
     case 2:
       return InstanciateFromStreamV2(fstream);
-    case 102:
-      return InstanciateFromFilenameBinaryV2(fstream, filename);
     default:
       throw std::runtime_error("Unknown tracks manager file version");
   }
